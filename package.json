@@ -2,9 +2,9 @@
   "name": "random-bible-verse-app",
   "version": "1.0.0",
   "description": "App for generating random Bible verses with explanations",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
