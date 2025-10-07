@@ -102,7 +102,7 @@ app.get('/', async (req, res) => {
     res.send(`
       <html>
         <head>
-          <title>Random Scripture</title>
+          <title></title>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
             body {
