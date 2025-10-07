@@ -2,7 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const app = express();
 
-// Mapping for YouVersion book abbreviations
+// Mapping for YouVersion book abbreviations (for Bible verses)
 const bookMap = {
   'Genesis': 'GEN', 'Exodus': 'EXO', 'Leviticus': 'LEV', 'Numbers': 'NUM', 'Deuteronomy': 'DEU',
   'Joshua': 'JOS', 'Judges': 'JDG', 'Ruth': 'RUT', '1 Samuel': '1SA', '2 Samuel': '2SA',
@@ -21,43 +21,88 @@ const bookMap = {
   'Revelation': 'REV'
 };
 
+// Static scriptures for non-Bible texts
+const staticScriptures = [
+  {
+    source: 'Quran',
+    reference: 'Surah Al-Fatiha 1:1-2',
+    text: 'In the name of Allah, the Entirely Merciful, the Especially Merciful. [All] praise is [due] to Allah, Lord of the worlds.',
+    link: 'https://quran.com/1/1-2',
+    explanation: 'This opening chapter of the Quran emphasizes God’s mercy and sovereignty.'
+  },
+  {
+    source: 'Bhagavad Gita',
+    reference: 'Chapter 2:47',
+    text: 'You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.',
+    link: 'https://www.holy-bhagavad-gita.org/chapter/2/verse/47',
+    explanation: 'This verse from the Gita teaches detachment from outcomes, focusing on duty.'
+  }
+];
+
+// Function to randomly select a scripture (Bible API or static)
+async function getRandomScripture() {
+  // Randomly choose between Bible API and static scriptures (e.g., 50% chance each)
+  const useStatic = Math.random() < 0.5;
+  if (useStatic) {
+    const randomIndex = Math.floor(Math.random() * staticScriptures.length);
+    return staticScriptures[randomIndex];
+  }
+
+  // Fetch from Bible API
+  const apiResponse = await fetch('https://bible-api.com/?random=verse&translation=web');
+  if (!apiResponse.ok) {
+    throw new Error(`Bible API request failed with status ${apiResponse.status}`);
+  }
+  const data = await apiResponse.json();
+
+  // Validate API response
+  if (!data || !data.reference || !data.text) {
+    throw new Error('Invalid Bible API response: missing reference or text');
+  }
+
+  // Parse Bible verse
+  const reference = data.reference;
+  const text = data.text;
+  let bookAbbrev, chapter, verse;
+
+  try {
+    const [bookChapter, versePart] = reference.split(':');
+    if (!versePart) {
+      throw new Error('Invalid reference format: no verse part');
+    }
+    verse = versePart.trim();
+    
+    // Handle single-chapter books (e.g., Philemon, Jude)
+    const bookMatch = bookChapter.match(/^(\d*\s*[A-Za-z\s]+?)(\d+)?$/);
+    if (!bookMatch) {
+      throw new Error('Invalid reference format: unable to parse book and chapter');
+    }
+    
+    const book = bookMatch[1].trim();
+    chapter = bookMatch[2] || '1'; // Default to chapter 1 for single-chapter books
+    bookAbbrev = bookMap[book] || book.toUpperCase().replace(/\s/g, '').substring(0, 3);
+    
+    return {
+      source: 'Bible',
+      reference,
+      text,
+      link: `https://www.bible.com/bible/111/${bookAbbrev}.${chapter}.${verse}.NIV`,
+      explanation: `This verse, ${reference}, highlights a key message of faith from the Bible.`
+    };
+  } catch (parseError) {
+    throw new Error(`Failed to parse Bible verse reference: ${parseError.message}`);
+  }
+}
+
 app.get('/', async (req, res) => {
   try {
-    // Fetch random verse from Bible API
-    const apiResponse = await fetch('https://bible-api.com/?random=verse&translation=web');
-    if (!apiResponse.ok) {
-      throw new Error(`API request failed with status ${apiResponse.status}`);
-    }
-    const data = await apiResponse.json();
-
-    // Validate API response
-    if (!data || !data.reference || !data.text) {
-      throw new Error('Invalid API response: missing reference or text');
-    }
-
-    // Parse verse details
-    const reference = data.reference;
-    const text = data.text;
-    let bookAbbrev;
-    try {
-      const [bookChapter, verse] = reference.split(':');
-      const [book, chapter] = bookChapter.trim().split(/(\d*)\s+/).filter(Boolean);
-      bookAbbrev = bookMap[book] || book.toUpperCase().substring(0,3);
-    } catch (parseError) {
-      throw new Error('Failed to parse verse reference');
-    }
-
-    // Form YouVersion link
-    const youversionLink = `https://www.bible.com/bible/111/${bookAbbrev}.${chapter}.${verse}.NIV`;
-
-    // Customize explanation
-    const explanation = `This verse, ${reference}, highlights a key message of faith. Explore more in YouVersion for detailed study notes and context.`;
+    const scripture = await getRandomScripture();
 
     // Send styled HTML
     res.send(`
       <html>
         <head>
-          <title>Random Bible Verse</title>
+          <title>Random Scripture</title>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
             body {
@@ -98,7 +143,7 @@ app.get('/', async (req, res) => {
               margin: 20px 0;
               line-height: 1.6;
             }
-            .youversion-button {
+            .scripture-button {
               display: inline-block;
               padding: 12px 24px;
               background: #3498db;
@@ -109,7 +154,7 @@ app.get('/', async (req, res) => {
               transition: background 0.3s;
               margin-top: 20px;
             }
-            .youversion-button:hover {
+            .scripture-button:hover {
               background: #2980b9;
             }
             @media (max-width: 400px) {
@@ -121,10 +166,10 @@ app.get('/', async (req, res) => {
         </head>
         <body>
           <div class="container">
-            <h1>Random Bible Verse: ${reference}</h1>
-            <p class="verse-text">${text}</p>
-            <p class="explanation"><strong>Reflection:</strong> ${explanation}</p>
-            <a href="${youversionLink}" class="youversion-button">Explore in YouVersion</a>
+            <h1>Random Scripture: ${scripture.source} - ${scripture.reference}</h1>
+            <p class="verse-text">${scripture.text}</p>
+            <p class="explanation"><strong>Reflection:</strong> ${scripture.explanation}</p>
+            <a href="${scripture.link}" class="scripture-button">Explore in ${scripture.source}</a>
           </div>
         </body>
       </html>
@@ -141,8 +186,8 @@ app.get('/', async (req, res) => {
           </style>
         </head>
         <body>
-          <h1>Error fetching verse</h1>
-          <p>Unable to load verse: ${error.message}. Please try again later.</p>
+          <h1>Error fetching scripture</h1>
+          <p>Unable to load scripture: ${error.message}. Please try again later.</p>
         </body>
       </html>
     `);
