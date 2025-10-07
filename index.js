@@ -25,19 +25,32 @@ app.get('/', async (req, res) => {
   try {
     // Fetch random verse from Bible API
     const apiResponse = await fetch('https://bible-api.com/?random=verse&translation=web');
+    if (!apiResponse.ok) {
+      throw new Error(`API request failed with status ${apiResponse.status}`);
+    }
     const data = await apiResponse.json();
 
-    // Parse verse details
-    const reference = data.reference; // e.g., "John 3:16"
-    const text = data.text;
-    const [bookChapter, verse] = reference.split(':');
-    const [book, chapter] = bookChapter.trim().split(/(\d*)\s+/).filter(Boolean);
-    const bookAbbrev = bookMap[book] || book.toUpperCase().substring(0,3);
+    // Validate API response
+    if (!data || !data.reference || !data.text) {
+      throw new Error('Invalid API response: missing reference or text');
+    }
 
-    // Form YouVersion link (for manual navigation)
+    // Parse verse details
+    const reference = data.reference;
+    const text = data.text;
+    let bookAbbrev;
+    try {
+      const [bookChapter, verse] = reference.split(':');
+      const [book, chapter] = bookChapter.trim().split(/(\d*)\s+/).filter(Boolean);
+      bookAbbrev = bookMap[book] || book.toUpperCase().substring(0,3);
+    } catch (parseError) {
+      throw new Error('Failed to parse verse reference');
+    }
+
+    // Form YouVersion link
     const youversionLink = `https://www.bible.com/bible/111/${bookAbbrev}.${chapter}.${verse}.NIV`;
 
-    // Customize explanation (edit this to add deeper insights)
+    // Customize explanation
     const explanation = `This verse, ${reference}, highlights a key message of faith. Explore more in YouVersion for detailed study notes and context.`;
 
     // Send styled HTML
@@ -117,7 +130,8 @@ app.get('/', async (req, res) => {
       </html>
     `);
   } catch (error) {
-    res.send(`
+    console.error('Error:', error.message);
+    res.status(500).send(`
       <html>
         <head>
           <title>Error</title>
@@ -128,15 +142,11 @@ app.get('/', async (req, res) => {
         </head>
         <body>
           <h1>Error fetching verse</h1>
-          <p>Please try again later.</p>
+          <p>Unable to load verse: ${error.message}. Please try again later.</p>
         </body>
       </html>
     `);
   }
-});
-
-const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log("Your app is listening on port " + listener.address().port);
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
