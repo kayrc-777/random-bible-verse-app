@@ -1,14 +1,14 @@
 {
   "name": "random-bible-verse-app",
   "version": "1.0.0",
-  "description": "App for generating random Bible verses with explanations",
+  "description": "App for generating random scriptures",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.12"
   },
   "engines": {
     "node": ">=14.0.0"
