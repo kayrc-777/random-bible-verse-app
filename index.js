@@ -21,7 +21,7 @@ const bookMap = {
   'Revelation': 'REV'
 };
 
-// Static scriptures for non-Bible texts
+// Expanded static scriptures list
 const staticScriptures = [
   {
     source: 'Quran',
@@ -31,18 +31,74 @@ const staticScriptures = [
     explanation: 'This opening chapter of the Quran emphasizes God’s mercy and sovereignty.'
   },
   {
+    source: 'Quran',
+    reference: 'Surah Al-Baqarah 2:255',
+    text: 'Allah! There is no deity except Him, the Ever-Living, the Sustainer of existence.',
+    link: 'https://quran.com/2/255',
+    explanation: 'Known as Ayat al-Kursi, this verse highlights Allah’s omnipotence.'
+  },
+  {
+    source: 'Quran',
+    reference: 'Surah Al-Ikhlas 112:1-4',
+    text: 'Say, He is Allah, [who is] One, Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent.',
+    link: 'https://quran.com/112',
+    explanation: 'This chapter affirms the oneness of Allah.'
+  },
+  {
     source: 'Bhagavad Gita',
     reference: 'Chapter 2:47',
     text: 'You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.',
     link: 'https://www.holy-bhagavad-gita.org/chapter/2/verse/47',
-    explanation: 'This verse from the Gita teaches detachment from outcomes, focusing on duty.'
+    explanation: 'This verse teaches detachment from outcomes, focusing on duty.'
+  },
+  {
+    source: 'Bhagavad Gita',
+    reference: 'Chapter 4:7-8',
+    text: 'Whenever there is a decline in righteousness and rise of unrighteousness, I manifest Myself. To protect the righteous, destroy the wicked, and establish dharma, I come into being age after age.',
+    link: 'https://www.holy-bhagavad-gita.org/chapter/4/verse/7',
+    explanation: 'This verse explains the divine purpose of Krishna’s incarnations.'
+  },
+  {
+    source: 'Bhagavad Gita',
+    reference: 'Chapter 9:22',
+    text: 'To those who are constantly devoted and worship Me with love, I give the understanding by which they can come to Me.',
+    link: 'https://www.holy-bhagavad-gita.org/chapter/9/verse/22',
+    explanation: 'This emphasizes devotion as a path to divine connection.'
+  },
+  {
+    source: 'Torah',
+    reference: 'Genesis 1:1',
+    text: 'In the beginning, God created the heavens and the earth.',
+    link: 'https://www.chabad.org/library/bible_cdo/aid/8165',
+    explanation: 'This opening verse of the Torah describes the creation of the universe.'
+  },
+  {
+    source: 'Torah',
+    reference: 'Exodus 20:2-3',
+    text: 'I am the Lord your God, who brought you out of the land of Egypt, out of the house of slavery. You shall have no other gods before Me.',
+    link: 'https://www.chabad.org/library/bible_cdo/aid/9881',
+    explanation: 'This is the first of the Ten Commandments, emphasizing monotheism.'
+  },
+  {
+    source: 'Torah',
+    reference: 'Deuteronomy 6:4-5',
+    text: 'Hear, O Israel: The Lord our God, the Lord is one. You shall love the Lord your God with all your heart, soul, and might.',
+    link: 'https://www.chabad.org/library/bible_cdo/aid/9970',
+    explanation: 'The Shema, a central prayer in Judaism, affirms God’s unity and love.'
+  },
+  {
+    source: 'Upanishads',
+    reference: 'Isha Upanishad 1',
+    text: 'All this—whatever exists in this changing universe—should be covered by the Lord. Protect the Self by renunciation. Lust not after any man’s wealth.',
+    link: 'https://www.vedabase.com/en/iso/1',
+    explanation: 'This verse teaches renunciation and divine unity.'
   }
 ];
 
 // Function to randomly select a scripture (Bible API or static)
 async function getRandomScripture() {
-  // Randomly choose between Bible API and static scriptures (e.g., 50% chance each)
-  const useStatic = Math.random() < 0.5;
+  // 80% chance for Bible API, 20% for static scriptures to reduce repeats
+  const useStatic = Math.random() < 0.2;
   if (useStatic) {
     const randomIndex = Math.floor(Math.random() * staticScriptures.length);
     return staticScriptures[randomIndex];
@@ -104,6 +160,9 @@ app.get('/', async (req, res) => {
         <head>
           <title>Better Than Yesterday</title>
           <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+          <meta http-equiv="Pragma" content="no-cache">
+          <meta http-equiv="Expires" content="0">
           <style>
             body {
               font-family: 'Arial', sans-serif;
@@ -146,7 +205,7 @@ app.get('/', async (req, res) => {
             .scripture-button {
               display: inline-block;
               padding: 12px 24px;
-              background: #136324;
+              background: #057027;
               color: white;
               text-decoration: none;
               border-radius: 8px;
