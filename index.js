@@ -374,31 +374,11 @@ app.get('/', async (req, res) => {
               transition: background 0.3s;
               flex: 1;
               text-align: center;
+              border: none;
+              cursor: pointer;
             }
             .scripture-button:hover {
               background: #356859;
-            }
-            .note-input {
-              margin: 15px 0;
-              width: 80%;
-              max-width: 300px;
-              padding: 8px;
-              background: #444444;
-              color: #e0e0e0;
-              border: 1px solid #555555;
-              border-radius: 5px;
-              font-size: 0.9em;
-            }
-            #customNoteInput {
-              display: none;
-              width: 80%;
-              max-width: 300px;
-              padding: 8px;
-              background: #444444;
-              color: #e0e0e0;
-              border: 1px solid #555555;
-              border-radius: 5px;
-              font-size: 0.9em;
             }
             @media (max-width: 400px) {
               h1 { font-size: 1.5em; }
@@ -406,7 +386,6 @@ app.get('/', async (req, res) => {
               .container { padding: 20px; }
               .button-group { flex-direction: column; gap: 8px; }
               .scripture-button { padding: 8px 16px; font-size: 0.85em; }
-              .note-input, #customNoteInput { width: 90%; }
             }
           </style>
         </head>
@@ -415,33 +394,28 @@ app.get('/', async (req, res) => {
             <h1>${scripture.source} - ${scripture.reference}</h1>
             <p class="verse-text">${scripture.text}</p>
             <p class="explanation"><strong>Reflection:</strong> ${reflection}</p>
-            <select id="noteType" class="note-input" onchange="toggleCustomInput()">
-              <option value="Quick Thoughts">Quick Thoughts</option>
-              <option value="Faith Journal">Faith Journal</option>
-              <option value="Motivation Note">Motivation Note</option>
-              <option value="Custom">Custom</option>
-            </select>
-            <input type="text" id="customNoteInput" maxlength="100" placeholder="Enter your note">
             <div class="button-group">
               <a href="${scripture.link}" class="scripture-button">Explore in ${scripture.source}</a>
-              <a href="#" class="scripture-button" onclick="openNotesApp()">Add to Notes</a>
+              <button class="scripture-button" onclick="openNotesApp()">Add to Notes</button>
             </div>
           </div>
           <script>
-            function toggleCustomInput() {
-              const noteType = document.getElementById('noteType').value;
-              const customInput = document.getElementById('customNoteInput');
-              customInput.style.display = noteType === 'Custom' ? 'block' : 'none';
-            }
             function openNotesApp() {
-              const noteType = document.getElementById('noteType').value;
-              const customInput = document.getElementById('customNoteInput');
-              const userNote = noteType === 'Custom' ? customInput.value || 'Custom Note' : noteType;
-              const scriptureText = "${scripture.source} - ${scripture.reference}\\n${scripture.text}\\nMy Note: " + userNote;
-              const maxLength = 500;
-              const truncatedText = scriptureText.length > maxLength ? scriptureText.substring(0, maxLength - 3) + '...' : scriptureText;
-              const encodedText = encodeURIComponent(truncatedText);
-              window.location.href = 'mobilenotes://quicknote?text=' + encodedText;
+              try {
+                const scriptureText = "${scripture.source} - ${scripture.reference}\\n${scripture.text}";
+                const maxLength = 300;
+                const truncatedText = scriptureText.length > maxLength ? scriptureText.substring(0, maxLength - 3) + '...' : scriptureText;
+                const encodedText = encodeURIComponent(truncatedText);
+                window.location.href = 'mobilenotes://quicknote?text=' + encodedText;
+                setTimeout(() => {
+                  if (document.hasFocus()) {
+                    window.location.href = 'mobilenotes://';
+                  }
+                }, 500);
+              } catch (error) {
+                console.error('Error opening Notes app:', error);
+                window.location.href = 'mobilenotes://';
+              }
             }
           </script>
         </body>
