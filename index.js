@@ -166,7 +166,7 @@ app.get('/', async (req, res) => {
         </head>
         <body>
           <div class="container">
-            <h1>Random Scripture: ${scripture.source} - ${scripture.reference}</h1>
+            <h1>${scripture.source} - ${scripture.reference}</h1>
             <p class="verse-text">${scripture.text}</p>
             <p class="explanation"><strong>Reflection:</strong> ${scripture.explanation}</p>
             <a href="${scripture.link}" class="scripture-button">Explore in ${scripture.source}</a>
