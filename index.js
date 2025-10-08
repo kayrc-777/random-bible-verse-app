@@ -321,8 +321,8 @@ app.get('/', async (req, res) => {
           <style>
             body {
               font-family: 'Arial', sans-serif;
-              background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
-              color: #333;
+              background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+              color: #e0e0e0;
               margin: 0;
               padding: 20px;
               display: flex;
@@ -332,28 +332,28 @@ app.get('/', async (req, res) => {
               text-align: center;
             }
             .container {
-              background: white;
+              background: #333333;
               padding: 30px;
               border-radius: 15px;
-              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
               max-width: 600px;
               width: 90%;
             }
             h1 {
-              color: #2c3e50;
+              color: #f5f5f5;
               font-size: 1.8em;
               margin-bottom: 20px;
             }
             .verse-text {
               font-size: 1.2em;
               font-style: italic;
-              color: #34495e;
+              color: #d3d3d3;
               margin: 20px 0;
               line-height: 1.5;
             }
             .explanation {
               font-size: 1em;
-              color: #555;
+              color: #cccccc;
               margin: 20px 0;
               line-height: 1.6;
             }
@@ -369,7 +369,7 @@ app.get('/', async (req, res) => {
               margin-top: 20px;
             }
             .scripture-button:hover {
-              background: #2980b9;
+              background: #356859;
             }
             @media (max-width: 400px) {
               h1 { font-size: 1.5em; }
@@ -395,8 +395,8 @@ app.get('/', async (req, res) => {
         <head>
           <title>Error</title>
           <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f0f4f8; color: #333; }
-            h1 { color: #e74c3c; }
+            body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #2c2c2c; color: #e0e0e0; }
+            h1 { color: #ff6b6b; }
           </style>
         </head>
         <body>
