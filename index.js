@@ -146,7 +146,7 @@ app.get('/', async (req, res) => {
             .scripture-button {
               display: inline-block;
               padding: 12px 24px;
-              background: #3498db;
+              background: #136324;
               color: white;
               text-decoration: none;
               border-radius: 8px;
