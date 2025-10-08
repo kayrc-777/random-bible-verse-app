@@ -239,11 +239,13 @@ function getRandomReflection(scripture, book) {
       }
     }
     const reflections = bibleReflections[category];
-    return reflections[Math.floor(Math.random() * reflections.length)];
+    const template = reflections[Math.floor(Math.random() * reflections.length)];
+    return template.replace('${reference}', scripture.reference);
   } else {
     // Static non-Bible scriptures
     const reflections = scripture.reflections;
-    return reflections[Math.floor(Math.random() * reflections.length)];
+    const template = reflections[Math.floor(Math.random() * reflections.length)];
+    return template.replace('${reference}', scripture.reference);
   }
 }
 
