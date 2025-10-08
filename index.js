@@ -350,6 +350,7 @@ app.get('/', async (req, res) => {
               color: #d3d3d3;
               margin: 20px 0;
               line-height: 1.5;
+              position: relative;
             }
             .explanation {
               font-size: 1em;
@@ -380,6 +381,18 @@ app.get('/', async (req, res) => {
             .scripture-button:hover {
               background: #356859;
             }
+            .clipboard-icon {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              font-size: 1.2em;
+              color: #e0e0e0;
+              filter: grayscale(100%);
+              cursor: pointer;
+            }
+            .clipboard-icon:hover {
+              color: #ffffff;
+            }
             @media (max-width: 400px) {
               h1 { font-size: 1.5em; }
               .verse-text { font-size: 1em; }
@@ -392,29 +405,43 @@ app.get('/', async (req, res) => {
         <body>
           <div class="container">
             <h1>${scripture.source} - ${scripture.reference}</h1>
-            <p class="verse-text">${scripture.text}</p>
+            <p class="verse-text">${scripture.text}<span class="clipboard-icon" onclick="copyToClipboard()">📋</span></p>
             <p class="explanation"><strong>Reflection:</strong> ${reflection}</p>
             <div class="button-group">
               <a href="${scripture.link}" class="scripture-button">Explore in ${scripture.source}</a>
-              <button class="scripture-button" onclick="openNotesApp()">Add to Notes</button>
+              <button type="button" class="scripture-button" onclick="openNotesApp()">Add to Notes</button>
             </div>
           </div>
           <script>
+            const source = "${scripture.source}";
+            const reference = "${scripture.reference}";
+            const text = "${scripture.text}";
             function openNotesApp() {
               try {
-                const scriptureText = "${scripture.source} - ${scripture.reference}\\n${scripture.text}";
-                const maxLength = 300;
+                const scriptureText = source + " - " + reference + "\\n" + text;
+                const maxLength = 200;
                 const truncatedText = scriptureText.length > maxLength ? scriptureText.substring(0, maxLength - 3) + '...' : scriptureText;
                 const encodedText = encodeURIComponent(truncatedText);
                 window.location.href = 'mobilenotes://quicknote?text=' + encodedText;
-                setTimeout(() => {
-                  if (document.hasFocus()) {
-                    window.location.href = 'mobilenotes://';
-                  }
-                }, 500);
               } catch (error) {
                 console.error('Error opening Notes app:', error);
-                window.location.href = 'mobilenotes://';
+                alert('Failed to open Notes. Use the clipboard to copy the scripture.');
+              }
+            }
+            function copyToClipboard() {
+              try {
+                const scriptureText = source + " - " + reference + "\\n" + text;
+                const maxLength = 200;
+                const truncatedText = scriptureText.length > maxLength ? scriptureText.substring(0, maxLength - 3) + '...' : scriptureText;
+                navigator.clipboard.writeText(truncatedText).then(() => {
+                  alert('Copied to clipboard!');
+                }).catch(err => {
+                  console.error('Error copying to clipboard:', err);
+                  alert('Failed to copy. Please select and copy the text manually.');
+                });
+              } catch (error) {
+                console.error('Error copying to clipboard:', error);
+                alert('Failed to copy. Please select and copy the text manually.');
               }
             }
           </script>
